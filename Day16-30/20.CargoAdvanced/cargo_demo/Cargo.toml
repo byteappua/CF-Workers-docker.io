@@ -1,0 +1,8 @@
+[package]
+name = "cargo_demo"
+version = "0.1.0"
+edition = "2021"
+description = "A demo crate for learning Cargo documentation"
+license = "MIT"
+
+[dependencies]

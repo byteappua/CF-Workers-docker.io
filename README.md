@@ -1,156 +1,86 @@
-[**第三方 DockerHub 镜像服务列表**](https://github.com/cmliu/CF-Workers-docker.io?tab=readme-ov-file#%E7%AC%AC%E4%B8%89%E6%96%B9-dockerhub-%E9%95%9C%E5%83%8F%E6%9C%8D%E5%8A%A1)
+# Rust - 100天从新手到大师
 
-# CF-Workers-docker.io：Docker仓库镜像代理工具
+> 作者：Jules (Agent)
+> 参考：[Python - 100天从新手到大师](https://github.com/jackfrued/Python-100-Days)
 
-这个项目是一个基于 Cloudflare Workers 的 Docker 镜像代理工具。它能够中转对 Docker 官方镜像仓库的请求，解决一些访问限制和加速访问的问题。
+Rust 是一门赋予每个人构建可靠且高效软件能力的语言。它以内存安全、高性能和并发安全性著称。本项目旨在通过100天的学习计划，帮助你从零开始掌握 Rust，并能应用它进行系统编程、Web开发等。
 
-## 部署方式
+## 目录
 
-- **Workers** 部署：复制 [_worker.js](https://github.com/cmliu/CF-Workers-docker.io/blob/main/_worker.js) 代码，`保存并部署`即可
-- **Pages** 部署：`Fork` 后 `连接GitHub` 一键部署即可
+### 第一阶段：Rust 语言基础 (Day 01 - 15)
+在这个阶段，我们将学习 Rust 的基本语法和核心概念，特别是所有权系统，这是 Rust 最独特的功能。
 
-## 如何使用？ [视频教程](https://www.youtube.com/watch?v=l2jwq9CagNQ)
+- **Day 01**: 初识 Rust - 环境搭建、Hello World、Cargo 包管理工具
+- **Day 02**: 变量与数据类型 - 不可变性、标量类型、复合类型
+- **Day 03**: 函数与控制流 - 参数、返回值、if/else、循环
+- **Day 04**: 所有权 (Ownership) - Rust 的核心内存管理机制
+- **Day 05**: 引用与借用 (References & Borrowing) - 借用检查器
+- **Day 06**:切片 (Slices) - 处理序列数据的引用
+- **Day 07**: 结构体 (Structs) - 自定义数据类型
+- **Day 08**: 枚举 (Enums) 与 模式匹配 (Match)
+- **Day 09**: 控制流运算符 (if let)
+- **Day 10**: 模块系统 (Modules) - 包、Crate、模块、路径
+- **Day 11**: 常用集合 - Vector, String, HashMap
+- **Day 12**: 错误处理 - Result, Option, panic!
+- **Day 13**: 泛型 (Generics)
+- **Day 14**: Trait (特征) - 定义共享行为
+- **Day 15**: 生命周期 (Lifetimes) - 引用的有效性验证
 
-例如您的Workers项目域名为：`docker.fxxk.dedyn.io`；
+### 第二阶段：进阶概念与标准库 (Day 16 - 30)
+掌握 Rust 的中级概念，学习如何编写测试、处理 I/O 以及使用闭包和迭代器。
 
-### 1.官方镜像路径前面加域名
-```shell
-docker pull docker.fxxk.dedyn.io/stilleshan/frpc:latest
-```
-```shell
-docker pull docker.fxxk.dedyn.io/library/nginx:stable-alpine3.19-perl
-```
+- **Day 16**:自动化测试 - 单元测试与集成测试
+- **Day 17**: 命令行程序实例 - 构建 grep-lite
+- **Day 18**: 闭包 (Closures)
+- **Day 19**: 迭代器 (Iterators)
+- **Day 20**: Cargo 进阶与 Crates.io 发布
+- **Day 21**: 智能指针 (Smart Pointers) - Box, Rc, RefCell
+- **Day 22**: 内部可变性 (Interior Mutability)
+- **Day 23**: 引用循环与内存泄漏
+- **Day 24**: 并发编程基础 - 线程 (Threads)
+- **Day 25**: 消息传递 (Message Passing) - Channels
+- **Day 26**: 共享状态并发 - Mutex, Arc
+- **Day 27**: 面向对象特性 - Trait 对象
+- **Day 28**: 模式 (Patterns) 与 模式匹配详解
+- **Day 29**: 高级特征 - 关联类型、默认参数
+- **Day 30**: 高级类型 - Newtype 模式、类型别名
 
-### 2.一键设置镜像加速
-修改文件 `/etc/docker/daemon.json`（如果不存在则创建）
-```shell
-sudo mkdir -p /etc/docker
-sudo tee /etc/docker/daemon.json <<-'EOF'
-{
-  "registry-mirrors": ["https://docker.fxxk.dedyn.io"]  # 请替换为您自己的Worker自定义域名
-}
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-### 3. 配置常见仓库的镜像加速
-#### 3.1 配置  
-Containerd 较简单，它支持任意 `registry` 的 `mirror`，只需要修改配置文件 `/etc/containerd/config.toml`，添加如下的配置：  
-```yaml
-    [plugins."io.containerd.grpc.v1.cri".registry]
-      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-          endpoint = ["https://xxxx.xx.com"]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."k8s.gcr.io"]
-          endpoint = ["https://xxxx.xx.com"]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."gcr.io"]
-          endpoint = ["https://xxxx.xx.com"]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."ghcr.io"]
-          endpoint = ["https://xxxx.xx.com"]
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."quay.io"]
-          endpoint = ["https://xxxx.xx.com"]
-```
-`Podman` 同样支持任意 `registry` 的 `mirror`，修改配置文件 `/etc/containers/registries.conf`，添加配置：  
-```yaml
-unqualified-search-registries = ['docker.io', 'k8s.gcr.io', 'gcr.io', 'ghcr.io', 'quay.io']
+### 第三阶段：高级特性与底层编程 (Day 31 - 45)
+深入 Rust 的底层，学习不安全 Rust、宏以及 FFI。
 
-[[registry]]
-prefix = "docker.io"
-insecure = true
-location = "registry-1.docker.io"
+- **Day 31**: Unsafe Rust - 解引用裸指针、调用不安全函数
+- **Day 32**: 高级 Trait -父 Trait、Newtype
+- **Day 33**: 宏 (Macros) - 声明式宏
+- **Day 34**: 过程宏 (Procedural Macros)
+- **Day 35**: FFI - 与 C 语言交互
+- **Day 36**: Rust 异步编程基础 - async/await
+- **Day 37**: Future 模型详解
+- **Day 38**: Tokio 运行时入门
+- **Day 39**: 异步 I/O 操作
+- **Day 40**:构建异步 Web Server (底层实现)
+- **Day 41-45**: 阶段项目 - 构建一个简易的多线程 Web 服务器
 
-[[registry.mirror]]
-location = "https://xxxx.onrender.com"
+### 第四阶段：Web 开发与生态系统 (Day 46 - 75)
+利用 Rust 强大的生态系统进行实际应用开发，重点在 Web 后端。
 
-[[registry]]
-prefix = "k8s.gcr.io"
-insecure = true
-location = "k8s.gcr.io"
+- **Day 46-50**: Web 框架 Axum 入门
+- **Day 51-55**: 数据库交互 - SQLx 与 Postgres
+- **Day 56-60**: 身份认证与授权 (JWT)
+- **Day 61-65**: RESTful API 设计与实现
+- **Day 66-70**: 使用 Serde 进行序列化与反序列化
+- **Day 71-75**: WebAssembly (WASM) 入门 - Yew 或 Leptos 框架
 
-[[registry.mirror]]
-location = "https://xxxx.onrender.com"
+### 第五阶段：系统编程与实战项目 (Day 76 - 100)
+挑战复杂的系统级项目，巩固所学知识。
 
-[[registry]]
-prefix = "gcr.io"
-insecure = true
-location = "gcr.io"
+- **Day 76-80**: 命令行工具 (CLI) 开发 - 使用 Clap
+- **Day 81-85**: 嵌入式 Rust 简介 (Optional) / 或高性能网络服务
+- **Day 86-90**: 区块链基础概念实现 (简易版)
+- **Day 91-100**: 最终项目 - 分布式键值存储系统 (Distributed Key-Value Store)
 
-[[registry.mirror]]
-location = "https://xxxx.onrender.com"
+## 如何使用
+建议按照天数顺序学习，每天阅读相关概念，并亲手编写代码。
 
-[[registry]]
-prefix = "ghcr.io"
-insecure = true
-location = "ghcr.io"
-
-[[registry.mirror]]
-location = "https://xxxx.onrender.com"
-
-[[registry]]
-prefix = "quay.io"
-insecure = true
-location = "quay.io"
-
-[[registry.mirror]]
-location = "https://xxxx.onrender.com"
-
-```
-
-#### 3.3 使用
-对于以上配置，k8s在使用的时候，就可以直接`pull`外部无法pull的镜像了 
- 手动可以直接`pull` 配置了`mirror`的仓库  
- `crictl pull registry.k8s.io/kube-proxy:v1.28.4`
- `docker  pull nginx:1.21`
-
-
-
-
-
-
-## 变量说明
-| 变量名 | 示例 | 必填 | 备注 | 
-|--|--|--|--|
-| URL302 | https://t.me/CMLiussss |❌| 主页302跳转 |
-| URL | https://www.baidu.com/ |❌| 主页伪装(设为`nginx`则伪装为nginx默认页面) |
-| UA | netcraft |❌| 支持多元素, 元素之间使用空格或换行作间隔 |
-
-
-
-
-# 第三方 DockerHub 镜像服务
-
-**注意:**
-- 以下内容仅做镜像服务的整理与搜集，未做任何安全性检测和验证。
-- 使用前请自行斟酌，并根据实际需求进行必要的安全审查。
-- 本列表中的任何服务都不做任何形式的安全承诺或保证。
-
-| DockerHub 镜像仓库 | 镜像加地址 |
-| ------------------ | ----------- |
-| [bestcfipas镜像服务](https://t.me/bestcfipas/1900) | `https://docker.registry.cyou` |
-|  | `https://docker-cf.registry.cyou` |
-| [zero_free镜像服务](https://t.me/zero_free/80) | `https://docker.jsdelivr.fyi` |
-|  | `https://dockercf.jsdelivr.fyi` |
-|  | `https://dockertest.jsdelivr.fyi` |
-| [docker proxy](https://dockerpull.com/) | `https://dockerpull.com` |
-| [docker proxy](https://dockerproxy.cn/) | `https://dockerproxy.cn` |
-| [Docker镜像加速站](https://hub.uuuadc.top/) | `https://hub.uuuadc.top` |
-|  | `https://docker.1panel.live` |
-|  | `https://hub.rat.dev` |
-| [DockerHub 镜像加速代理](https://docker.anyhub.us.kg/) | `https://docker.anyhub.us.kg` |
-|  | `https://docker.chenby.cn` |
-|  | `https://dockerhub.jobcher.com` |
-| [镜像使用说明](https://dockerhub.icu/) | `https://dockerhub.icu` |
-| [Docker镜像加速站](https://docker.ckyl.me/) | `https://docker.ckyl.me` |
-| [镜像使用说明](https://docker.awsl9527.cn/) | `https://docker.awsl9527.cn` |
-| [镜像使用说明](https://docker.hpcloud.cloud/) | `https://docker.hpcloud.cloud` |
-| [DaoCloud 镜像站](https://github.com/DaoCloud/public-image-mirror) | `https://docker.m.daocloud.io` |
-| [AtomHub 可信镜像仓库平台](https://atomhub.openatom.cn/) (只包含基础镜像，共336个) | `https://atomhub.openatom.cn` |
-
-
-
-
-
-# 鸣谢
-
-[muzihuaner](https://github.com/muzihuaner)、[V2ex网友](https://global.v2ex.com/t/1007922)、[ciiiii](https://github.com/ciiiii/cloudflare-docker-proxy)、[ChatGPT](https://chatgpt.com/)、[白嫖哥](https://t.me/bestcfipas/1900)、[zero_free频道](https://t.me/zero_free/80)、[dongyubin](https://github.com/cmliu/CF-Workers-docker.io/issues/8)、[kiko923](https://github.com/cmliu/CF-Workers-docker.io/issues/5)
-
+## 环境要求
+- Rust Stable
+- VS Code (推荐插件: rust-analyzer, crates, dependi)
